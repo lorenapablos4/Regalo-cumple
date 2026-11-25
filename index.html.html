@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Un regalo para ti ✨</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-top: #070913;
+      --bg-bottom: #111528;
+      --gold: #e7c582;
+      --gold-soft: rgba(231, 197, 130, 0.25);
+      --text-main: #f7f4ee;
+      --text-muted: #b4b8c8;
+      --heart-1: #ff6b81;
+      --heart-2: #e63956;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    body {
+      min-height: 100dvh;
+      background: radial-gradient(circle at 50% 25%, #191f3a 0%, var(--bg-bottom) 45%, var(--bg-top) 100%);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Fondo de estrellas animadas */
+    #starfield {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 430px;
+      min-height: 100dvh;
+      padding: 32px 24px 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .screen {
+      width: 100%;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeIn 0.7s ease forwards;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .eyebrow {
+      font-size: 0.72rem;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 14px;
+      font-weight: 500;
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.55rem;
+      line-height: 1.12;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 14px;
+    }
+
+    h1 em {
+      font-style: italic;
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .subtitle {
+      font-size: 0.92rem;
+      line-height: 1.55;
+      color: var(--text-muted);
+      max-width: 310px;
+      margin-bottom: 28px;
+    }
+
+    /* Pantalla 1: PIN */
+    .pin-dots {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 10px;
+    }
+
+    .dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255, 255, 255, 0.35);
+      background: transparent;
+      transition: all 0.22s ease;
+    }
+
+    .dot.filled {
+      background: var(--gold);
+      border-color: var(--gold);
+      box-shadow: 0 0 12px rgba(231, 197, 130, 0.75);
+      transform: scale(1.1);
+    }
+
+    .dot.error {
+      border-color: #ff5c77;
+      background: #ff5c77;
+      box-shadow: 0 0 12px rgba(255, 92, 119, 0.7);
+    }
+
+    .pin-hint {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 26px;
+      min-height: 18px;
+      transition: color 0.2s;
+    }
+
+    .pin-hint.error-text {
+      color: #ff7b90;
+    }
+
+    .shake {
+      animation: shake 0.38s ease;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-6px); }
+      80% { transform: translateX(6px); }
+    }
+
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 72px);
+      gap: 14px 18px;
+      justify-content: center;
+    }
+
+    .key {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(6px);
+      color: var(--text-main);
+      font-size: 1.45rem;
+      font-weight: 400;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.12s ease, background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .key:active {
+      transform: scale(0.92);
+      background: rgba(231, 197, 130, 0.18);
+      border-color: var(--gold);
+    }
+
+    .key.action {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    /* Pantalla 2: Corazón interactivo */
+    #screen-heart {
+      justify-content: space-between;
+      min-height: 82dvh;
+    }
+
+    .heart-stage {
+      position: relative;
+      width: 280px;
+      height: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: auto 0;
+    }
+
+    .heart-glow {
+      position: absolute;
+      width: 190px;
+      height: 190px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 92, 122, 0.42) 0%, rgba(255, 92, 122, 0) 70%);
+      pointer-events: none;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+
+    .heart-btn {
+      position: relative;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.45s ease;
+      z-index: 3;
+      animation: idlePulse 2s infinite ease-in-out;
+    }
+
+    @keyframes idlePulse {
+      0%, 100% { filter: drop-shadow(0 0 18px rgba(255, 90, 120, 0.45)); }
+      50% { filter: drop-shadow(0 0 30px rgba(255, 90, 120, 0.75)); }
+    }
+
+    .heart-svg {
+      width: 145px;
+      height: 145px;
+      overflow: visible;
+    }
+
+    .progress-wrapper {
+      width: 100%;
+      max-width: 300px;
+      margin-top: 16px;
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--gold);
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #ff6b81, var(--gold));
+      border-radius: 999px;
+      transition: width 0.25s ease;
+    }
+
+    .heart-instruction {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+    }
+
+    /* Partículas al tocar el corazón */
+    .sparkle {
+      position: fixed;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 10;
+      animation: flySparkle 0.75s ease-out forwards;
+    }
+
+    @keyframes flySparkle {
+      0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(var(--tx), var(--ty)) scale(0.2);
+      }
+    }
+
+    /* Pantalla 3: Regalo final */
+    .gift-card {
+      width: 100%;
+      max-width: 310px;
+      border-radius: 20px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(231, 197, 130, 0.35);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 30px rgba(231, 197, 130, 0.12);
+      margin: 8px 0 22px;
+      overflow: hidden;
+    }
+
+    .gift-card img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 14px;
+    }
+
+    .gift-caption-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.35rem;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+
+    .gift-caption-date {
+      font-size: 0.82rem;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    .gift-message {
+      font-size: 0.92rem;
+      line-height: 1.65;
+      color: #eae6df;
+      max-width: 330px;
+      margin-bottom: 26px;
+    }
+
+    .replay-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(231, 197, 130, 0.4);
+      color: var(--text-main);
+      padding: 11px 22px;
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 0.86rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s, transform 0.15s;
+    }
+
+    .replay-btn:active {
+      transform: scale(0.96);
+      background: rgba(231, 197, 130, 0.16);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="starfield"></canvas>
+
+  <main class="container">
+    <!-- PANTALLA 1: CONTRASEÑA -->
+    <section id="screen-pin" class="screen active">
+      <div class="eyebrow">✦ UN REGALO TE ESPERA ✦</div>
+      <h1>Hay algo <em>escrito</em><br>en las estrellas<br>para ti</h1>
+      <p class="subtitle">Pero está guardado bajo llave. Introduce la fecha de nuestro día mágico para abrirlo.</p>
+
+      <div class="pin-dots" id="pin-dots">
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
+      <div class="pin-hint" id="pin-hint">4 dígitos · solo tú lo sabes</div>
+
+      <div class="keypad">
+        <button class="key" data-num="1">1</button>
+        <button class="key" data-num="2">2</button>
+        <button class="key" data-num="3">3</button>
+        <button class="key" data-num="4">4</button>
+        <button class="key" data-num="5">5</button>
+        <button class="key" data-num="6">6</button>
+        <button class="key" data-num="7">7</button>
+        <button class="key" data-num="8">8</button>
+        <button class="key" data-num="9">9</button>
+        <button class="key action" id="btn-clear">C</button>
+        <button class="key" data-num="0">0</button>
+        <button class="key action" id="btn-back">⌫</button>
+      </div>
+    </section>
+
+    <!-- PANTALLA 2: CORAZÓN -->
+    <section id="screen-heart" class="screen">
+      <div>
+        <div class="eyebrow">✦ LA LLAVE GIRÓ ✦</div>
+        <h1><em>Despierta mi corazón</em></h1>
+      </div>
+
+      <div class="heart-stage">
+        <div class="heart-glow" id="heart-glow"></div>
+        <button class="heart-btn" id="heart-btn" aria-label="Tocar corazón">
+          <svg class="heart-svg" viewBox="0 0 200 185">
+            <defs>
+              <radialGradient id="heartGrad" cx="35%" cy="30%" r="70%">
+                <stop offset="0%" stop-color="#ff8fa3" />
+                <stop offset="55%" stop-color="#ff4d6d" />
+                <stop offset="100%" stop-color="#c9184a" />
+              </radialGradient>
+            </defs>
+            <path d="M100 175 C100 175 15 120 15 58 C15 28 38 8 65 8 C83 8 95 18 100 28 C105 18 117 8 135 8 C162 8 185 28 185 58 C185 120 100 175 100 175 Z" fill="url(#heartGrad)" />
+            <ellipse cx="56" cy="48" rx="18" ry="11" transform="rotate(-32 56 48)" fill="rgba(255,255,255,0.42)" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="progress-wrapper">
+        <div class="progress-meta">
+          <span id="tap-counter">0 / 15</span>
+          <span id="tap-percent">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <p class="heart-instruction" id="heart-instruction">Toca mi corazón varias veces hasta que se abra</p>
+      </div>
+    </section>
+
+    <!-- PANTALLA 3: REGALO FINAL -->
+    <section id="screen-gift" class="screen">
+      <div class="eyebrow">✦ TU REGALO SE ABRIÓ ✦</div>
+      <h1>¡Feliz Cumpleaños, mi amor!</h1>
+
+      <div class="gift-card">
+        <!-- IMPORTANTE: Pon tu imagen en la misma carpeta llamada regalo.jpg -->
+        <img src="regalo.png" alt="Nuestro cielo estrellado" />
+      </div>
+
+      <div class="gift-caption-title">Bajo estas estrellas, comenzó nuestra historia</div>
+      <div class="gift-caption-date">24 de septiembre de 2022 · 02:30</div>
+
+      <p class="gift-message">
+        Hoy celebro el día en que llegaste al mundo y el milagro en el que existes. Gracias por cada momento, cada risa y cada estrella que compartimos. Te amo más que ayer y menos que mañana.
+      </p>
+
+      <button class="replay-btn" id="replay-btn">↻ Revivir la magia</button>
+    </section>
+  </main>
+
+  <script>
+    // --- Fondo de estrellas ---
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      stars = Array.from({ length: 95 }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.5 + 0.3,
+        alpha: Math.random(),
+        speed: Math.random() * 0.015 + 0.004
+      }));
+    }
+
+    function drawStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (const s of stars) {
+        s.alpha += s.speed;
+        const opacity = 0.25 + Math.abs(Math.sin(s.alpha)) * 0.75;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 248, 231, ${opacity})`;
+        ctx.fill();
+      }
+      requestAnimationFrame(drawStars);
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    drawStars();
+
+    // --- Lógica de navegación ---
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    // --- Lógica PIN (2409) ---
+    const CORRECT_PIN = '2409';
+    let enteredPin = '';
+    const dots = document.querySelectorAll('.dot');
+    const dotsContainer = document.getElementById('pin-dots');
+    const pinHint = document.getElementById('pin-hint');
+
+    function updateDots() {
+      dots.forEach((dot, idx) => {
+        dot.classList.remove('error');
+        dot.classList.toggle('filled', idx < enteredPin.length);
+      });
+    }
+
+    document.querySelectorAll('.key[data-num]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (enteredPin.length >= 4) return;
+        enteredPin += btn.dataset.num;
+        updateDots();
+
+        if (enteredPin.length === 4) {
+          if (enteredPin === CORRECT_PIN) {
+            pinHint.textContent = '¡Código correcto! ✨';
+            pinHint.classList.remove('error-text');
+            setTimeout(() => showScreen('screen-heart'), 450);
+          } else {
+            dots.forEach(d => d.classList.add('error'));
+            dotsContainer.classList.add('shake');
+            pinHint.textContent = 'Ese no es nuestro día mágico, inténtalo otra vez';
+            pinHint.classList.add('error-text');
+            setTimeout(() => {
+              dotsContainer.classList.remove('shake');
+              enteredPin = '';
+              updateDots();
+            }, 650);
+          }
+        }
+      });
+    });
+
+    document.getElementById('btn-clear').addEventListener('click', () => {
+      enteredPin = '';
+      pinHint.textContent = '4 dígitos · solo tú lo sabes';
+      pinHint.classList.remove('error-text');
+      updateDots();
+    });
+
+    document.getElementById('btn-back').addEventListener('click', () => {
+      enteredPin = enteredPin.slice(0, -1);
+      updateDots();
+    });
+
+    // --- Lógica Corazón (15 toques) ---
+    const MAX_TAPS = 15;
+    let taps = 0;
+    let unlocked = false;
+    const heartBtn = document.getElementById('heart-btn');
+    const heartGlow = document.getElementById('heart-glow');
+    const tapCounter = document.getElementById('tap-counter');
+    const tapPercent = document.getElementById('tap-percent');
+    const progressFill = document.getElementById('progress-fill');
+    const heartInstruction = document.getElementById('heart-instruction');
+
+    function spawnSparkles(x, y, count = 12) {
+      const colors = ['#ffe5a3', '#ff8fa3', '#ffffff', '#ffd166'];
+      for (let i = 0; i < count; i++) {
+        const spark = document.createElement('span');
+        spark.className = 'sparkle';
+        const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.5;
+        const dist = 45 + Math.random() * 75;
+        spark.style.left = `${x}px`;
+        spark.style.top = `${y}px`;
+        spark.style.background = colors[i % colors.length];
+        spark.style.boxShadow = `0 0 8px ${colors[i % colors.length]}`;
+        spark.style.setProperty('--tx', `${Math.cos(angle) * dist}px`);
+        spark.style.setProperty('--ty', `${Math.sin(angle) * dist}px`);
+        document.body.appendChild(spark);
+        setTimeout(() => spark.remove(), 750);
+      }
+    }
+
+    heartBtn.addEventListener('click', (e) => {
+      if (unlocked) return;
+      taps++;
+      const pct = Math.min(100, Math.round((taps / MAX_TAPS) * 100));
+      const scale = 1 + (taps / MAX_TAPS) * 1.45;
+
+      heartBtn.style.transform = `scale(${scale})`;
+      heartGlow.style.transform = `scale(${scale * 1.15})`;
+      tapCounter.textContent = `${taps} / ${MAX_TAPS}`;
+      tapPercent.textContent = `${pct}%`;
+      progressFill.style.width = `${pct}%`;
+
+      const rect = heartBtn.getBoundingClientRect();
+      const cx = e.clientX || rect.left + rect.width / 2;
+      const cy = e.clientY || rect.top + rect.height / 2;
+      spawnSparkles(cx, cy, taps === MAX_TAPS ? 28 : 10);
+
+      const remaining = MAX_TAPS - taps;
+      if (remaining > 0) {
+        heartInstruction.textContent = `Sigue tocando... ${remaining} ${remaining === 1 ? 'toque más' : 'toques más'} para revelar tu regalo`;
+      } else {
+        unlocked = true;
+        heartInstruction.textContent = '¡Abriendo tu regalo...!';
+        setTimeout(() => {
+          heartBtn.style.transform = 'scale(3.2)';
+          heartBtn.style.opacity = '0';
+        }, 200);
+        setTimeout(() => {
+          showScreen('screen-gift');
+        }, 850);
+      }
+    });
+
+    // --- Botón Revivir la magia ---
+    document.getElementById('replay-btn').addEventListener('click', () => {
+      enteredPin = '';
+      updateDots();
+      pinHint.textContent = '4 dígitos · solo tú lo sabes';
+      pinHint.classList.remove('error-text');
+
+      taps = 0;
+      unlocked = false;
+      heartBtn.style.transform = 'scale(1)';
+      heartBtn.style.opacity = '1';
+      heartGlow.style.transform = 'scale(1)';
+      tapCounter.textContent = `0 / ${MAX_TAPS}`;
+      tapPercent.textContent = '0%';
+      progressFill.style.width = '0%';
+      heartInstruction.textContent = 'Toca mi corazón varias veces hasta que se abra';
+
+      showScreen('screen-pin');
+    });
+  </script>
+</body>
+</html>
